@@ -1,0 +1,157 @@
+{
+  "info": {
+    "name": "Dentist Booking API",
+    "description": "Postman collection for Dentist Booking System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"telephone\": \"0812345678\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5003/api/v1/auth/register",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5003/api/v1/auth/login",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "Admin Create Dentist",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{adminToken}}"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Dr. Smith\",\n  \"clinicAddress\": \"123 Main St\",\n  \"yearsOfExperience\": 10,\n  \"areaOfExpertise\": \"Orthodontics\",\n  \"tel\": \"021234567\",\n  \"region\": \"Bangkok\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5003/api/v1/dentists",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "dentists"]
+        }
+      }
+    },
+    {
+      "name": "List Dentists",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5003/api/v1/dentists",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "dentists"]
+        }
+      }
+    },
+    {
+      "name": "Book Appointment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"apptDate\": \"2024-03-01\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5003/api/v1/dentists/{{dentistId}}/appointment",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "dentists", "{{dentistId}}", "appointment"]
+        }
+      }
+    },
+    {
+      "name": "View My Booking",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "url": {
+          "raw": "http://localhost:5003/api/v1/appointments",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "appointments"]
+        }
+      }
+    },
+    {
+      "name": "Edit Booking",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"},
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"apptDate\": \"2024-03-02\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5003/api/v1/appointment/{{appointmentId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "appointment", "{{appointmentId}}"]
+        }
+      }
+    },
+    {
+      "name": "Delete Booking",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"}
+        ],
+        "url": {
+          "raw": "http://localhost:5003/api/v1/appointment/{{appointmentId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5003",
+          "path": ["api", "v1", "appointment", "{{appointmentId}}"]
+        }
+      }
+    }
+  ]
+}

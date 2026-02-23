@@ -1,0 +1,19 @@
+@startuml Edit Booking
+header Sample VacQ Sequence Diagram
+footer Page %page% of %lastpage%
+title "Edit Booking"
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:appointments" as routerAppointments
+participant "<<controllers>>\n:appointment" as controllersAppointment
+participant "<<model>>\n:Appointment" as modelAppointment
+database "<<MongoDB>>\n:appointments" as AppointmentsDatabase
+client->server ++:req.put('/api/v1/appointment/{appointmentId}')
+server->routerAppointments ++:app.use('/api/v1/appointments',appointments)
+routerAppointments -> controllersAppointment ++:updateAppointment()
+controllersAppointment->modelAppointment ++:findByIdAndUpdate(req.params.id, req.body)
+modelAppointment ->AppointmentsDatabase ++: AppointmentSchema
+AppointmentsDatabase --> modelAppointment --: appointment
+controllersAppointment <-- modelAppointment --:appointment
+controllersAppointment->client --:response
+@enduml

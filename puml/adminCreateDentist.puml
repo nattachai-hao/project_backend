@@ -1,0 +1,19 @@
+@startuml Admin Create Dentist
+header Sample VacQ Sequence Diagram
+footer Page %page% of %lastpage%
+title "Admin Create Dentist"
+participant "Admin Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:dentists" as routerDentists
+participant "<<controllers>>\n:dentists" as controllersDentists
+participant "<<model>>\n:Dentist" as modelDentist
+database "<<MongoDB>>\n:dentists" as DentistsDatabase
+client->server ++:req.post('/api/v1/dentists')
+server->routerDentists ++:app.use('/api/v1/dentists',dentists)
+routerDentists -> controllersDentists ++:createDentist()
+controllersDentists->modelDentist ++:create(req.body)
+modelDentist ->DentistsDatabase ++: DentistSchema
+DentistsDatabase --> modelDentist --: dentist
+controllersDentists <-- modelDentist --:dentist
+controllersDentists->client --:response
+@enduml

@@ -1,0 +1,34 @@
+{
+  "name": "vacq",
+  "version": "1.0.0",
+  "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/kKKZe60Y)",
+  "homepage": "https://github.com/2110503-CEDT68/a-4-nattachai-hao#readme",
+  "bugs": {
+    "url": "https://github.com/2110503-CEDT68/a-4-nattachai-hao/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2110503-CEDT68/a-4-nattachai-hao.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^7.1.0",
+    "mongoose": "^9.2.1",
+    "newman": "^6.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
