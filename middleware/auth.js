@@ -10,7 +10,7 @@ exports.protect=async(req,res,next)=>{
     }
 
     if(!token) {
-        return res.status(401).json({success:false, message: 'Not autherize to access this route'});
+        return res.status(401).json({success:false, message: 'Not authorize to access this route'});
     }
 
     try{
@@ -28,7 +28,7 @@ exports.protect=async(req,res,next)=>{
     }
 }
 
-//Greant access to specific roles
+//Grant access to specific roles
 exports.authorize=(...roles)=>{
     return (req,res,next)=> {
         if(!roles.includes(req.user.role)) {

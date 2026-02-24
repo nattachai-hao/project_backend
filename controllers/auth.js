@@ -85,3 +85,17 @@ exports.getMe=async(req,res,next)=> {
         data:user
     });
 };
+
+// @desc    Log out user (clear cookie)
+// @route   GET /api/v1/auth/logout
+// @access  Public
+exports.logout = (req, res, next) => {
+    res.cookie('token', 'none', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    });
+    res.status(200).json({
+        success: true,
+        message: 'User logged out successfully'
+    });
+};
