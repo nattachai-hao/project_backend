@@ -1,0 +1,18 @@
+@startuml dentistBookingUseCase
+left to right direction
+actor User
+actor Admin
+rectangle "Dentist Booking System" {
+	User -- (Register)
+	User -- (Login/Logout)
+	User -- (View Dentists)
+	User -- (Book Appointment)
+	User -- (Manage Own Appointment)
+	(Manage Any Appointment) -- Admin
+	(Manage Dentist) -- Admin
+	(Register) -- Admin
+	(Login/Logout) -- Admin
+}
+
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml DentistBookingServiceClassDiagram
+left to right direction
+package "DentistBooking" {
+    class "<<Application>>\nDentistBookingService" as DentistBookingService {}
+
+    class "<<Resource>>\nDentists" as ResourceDentists {
+        <<GET>> +getDentists(): Dentist
+        <<POST>> +createDentist(): Dentist
+    }
+
+    class "<<Resource>>\nDentist" as ResourceDentist {
+        <<GET>> +getDentist(): Dentist
+        <<PUT>> +updateDentist(): Dentist
+        <<DELETE>> +deleteDentist(): void
+    }
+
+    class "<<Resource>>\nAppointments" as ResourceAppointments {
+        <<GET>> +getAppointments(): Appointment
+        <<POST>> +addAppointment(): Appointment
+    }
+
+    class "<<Resource>>\nAppointment" as ResourceAppointment {
+        <<GET>> +getAppointment(): Appointment
+        <<PUT>> +updateAppointment(): Appointment
+        <<DELETE>> +deleteAppointment(): void
+    }
+
+    class "<<Resource>>\nAuth" as ResourceAuth {
+        <<POST>> +register(): User
+        <<POST>> +login(): User
+        <<GET>> +logout(): void
+        <<GET>> +getMe(): User
+    }
+
+    class "<<Representation>>\nDentist" as RepresentationDentist {
+        -name
+        -yearsOfExperience
+        -areaOfExpertise
+        -tel
+        -clinicAddress
+        -region
+    }
+
+    class "<<Representation>>\nAppointment" as RepresentationAppointment {
+        -apptDate
+        -user
+        -dentist
+    }
+
+    class "<<Representation>>\nUser" as RepresentationUser {
+        -name
+        -telephone
+        -email
+        -password
+        -role
+    }
+}
+
+DentistBookingService ..> ResourceDentists: "/dentists\n<<Path>>"
+ResourceDentists ..> ResourceDentist: "/{dentistId}\n<<Path>>"
+DentistBookingService ..> ResourceAppointments: "/appointments\n<<Path>>"
+ResourceAppointments ..> ResourceAppointment: "/{appointmentId}\n<<Path>>"
+DentistBookingService ..> ResourceAuth: "/auth\n<<Path>>"
+ResourceDentist ..> RepresentationDentist: "<<use>>"
+ResourceAppointment ..> RepresentationAppointment: "<<use>>"
+ResourceAuth ..> RepresentationUser: "<<use>>"
+@enduml
