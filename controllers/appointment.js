@@ -75,6 +75,68 @@ exports.addAppointment=async (req,res,next)=>{
         }
         console.log(req.body);
 
+        // Validate appointment date and time
+        const apptDate = new Date(req.body.apptDate);
+        const dayName = apptDate.toLocaleString('en-US', { weekday: 'long' });
+
+        // Check if dentist works on this day
+        if(!dentist.workingDays.includes(dayName)) {
+            return res.status(400).json({success:false, message: `Dentist does not work on ${dayName}`});
+        }
+
+        // Check if time is within working hours and not during break
+        const apptHour = apptDate.getHours();
+        const apptMin = apptDate.getMinutes();
+        const apptTime = `${String(apptHour).padStart(2, '0')}:${String(apptMin).padStart(2, '0')}`;
+
+        const [startHour, startMin] = dentist.workingHours.startTime.split(':').map(Number);
+        const [endHour, endMin] = dentist.workingHours.endTime.split(':').map(Number);
+        const [breakStartHour, breakStartMin] = dentist.workingHours.breakStartTime.split(':').map(Number);
+        const [breakEndHour, breakEndMin] = dentist.workingHours.breakEndTime.split(':').map(Number);
+
+        // Check working hours
+        const apptMinutes = apptHour * 60 + apptMin;
+        const startMinutes = startHour * 60 + startMin;
+        const endMinutes = endHour * 60 + endMin;
+
+        if(apptMinutes < startMinutes || apptMinutes >= endMinutes) {
+            return res.status(400).json({
+                success:false, 
+                message: `Appointment time must be between ${dentist.workingHours.startTime} and ${dentist.workingHours.endTime}`
+            });
+        }
+
+        // Check break time
+        const breakStartMinutes = breakStartHour * 60 + breakStartMin;
+        const breakEndMinutes = breakEndHour * 60 + breakEndMin;
+        if(apptMinutes >= breakStartMinutes && apptMinutes < breakEndMinutes) {
+            return res.status(400).json({
+                success:false, 
+                message: `Dentist is on break from ${dentist.workingHours.breakStartTime} to ${dentist.workingHours.breakEndTime}`
+            });
+        }
+
+        // Check for conflicting appointments
+        const startOfDay = new Date(apptDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(apptDate);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const conflictingAppt = await Appointment.findOne({
+            dentist: req.params.dentistId,
+            apptDate: {
+                $gte: new Date(apptDate.getTime() - dentist.appointmentDuration * 60000),
+                $lt: new Date(apptDate.getTime() + dentist.appointmentDuration * 60000)
+            }
+        });
+
+        if(conflictingAppt) {
+            return res.status(400).json({
+                success:false, 
+                message: `Time slot at ${apptTime} is already booked. Please choose another time.`
+            });
+        }
+
         //add user Id to req.body
         req.body.user = req.user.id;
         //check for exited appointment

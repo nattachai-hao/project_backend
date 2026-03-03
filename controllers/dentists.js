@@ -132,3 +132,98 @@ exports.deleteDentist= async(req,res,next)=>{
         res.status(400).json({success:false});
     }
 }
+
+//@desc Get available time slots for a dentist
+//@route GET /api/v1/dentists/:id/available-slots
+//@access Public
+exports.getAvailableSlots= async(req,res,next)=>{
+    try {
+        const dentist = await Dentist.findById(req.params.id);
+        
+        if(!dentist) {
+            return res.status(404).json({success:false, message: 'Dentist not found'});
+        }
+
+        // Get date from query params (format: YYYY-MM-DD)
+        const selectedDate = req.query.date ? new Date(req.query.date) : new Date();
+        const dayName = selectedDate.toLocaleString('en-US', { weekday: 'long' });
+
+        // Check if dentist works on this day
+        if(!dentist.workingDays.includes(dayName)) {
+            return res.status(200).json({
+                success: true,
+                message: `Dentist does not work on ${dayName}`,
+                date: selectedDate.toISOString().split('T')[0],
+                availableSlots: []
+            });
+        }
+
+        // Get all appointments for this dentist on this date
+        const startOfDay = new Date(selectedDate);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(selectedDate);
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const appointments = await Appointment.find({
+            dentist: req.params.id,
+            apptDate: {
+                $gte: startOfDay,
+                $lte: endOfDay
+            }
+        });
+
+        // Parse working hours
+        const [startHour, startMin] = dentist.workingHours.startTime.split(':').map(Number);
+        const [endHour, endMin] = dentist.workingHours.endTime.split(':').map(Number);
+        const [breakStartHour, breakStartMin] = dentist.workingHours.breakStartTime.split(':').map(Number);
+        const [breakEndHour, breakEndMin] = dentist.workingHours.breakEndTime.split(':').map(Number);
+        const duration = dentist.appointmentDuration;
+
+        // Get booked times
+        const bookedTimes = appointments.map(appt => {
+            const time = new Date(appt.apptDate);
+            const hours = time.getHours();
+            const minutes = time.getMinutes();
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        });
+
+        // Generate available slots
+        const availableSlots = [];
+        
+        for(let hour = startHour; hour < endHour; hour++) {
+            for(let min = 0; min < 60; min += duration) {
+                if(hour === endHour && min > 0) break;
+
+                const slotTime = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`;
+                
+                // Skip break time
+                const isBreakTime = (hour > breakStartHour || (hour === breakStartHour && min >= breakStartMin)) &&
+                                   (hour < breakEndHour || (hour === breakEndHour && min < breakEndMin));
+                
+                if(isBreakTime) continue;
+
+                // Check if slot is already booked
+                const isBooked = bookedTimes.includes(slotTime);
+                
+                if(!isBooked) {
+                    availableSlots.push(slotTime);
+                }
+            }
+        }
+
+        res.status(200).json({
+            success: true,
+            date: selectedDate.toISOString().split('T')[0],
+            dayName: dayName,
+            dentistName: dentist.name,
+            workingHours: dentist.workingHours,
+            appointmentDuration: duration,
+            availableSlots: availableSlots,
+            bookedSlots: bookedTimes
+        });
+
+    } catch(err) {
+        console.log(err);
+        res.status(500).json({success:false, message: 'Error fetching available slots'});
+    }
+}

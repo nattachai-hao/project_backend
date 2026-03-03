@@ -1,3 +1,6 @@
+const { setServers } = require("node:dns/promises");
+setServers(["1.1.1.1", "8.8.8.8"]);
+
 //import express กับ dotenvเข้า
 const express = require('express');
 const dotenv = require('dotenv');

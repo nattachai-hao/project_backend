@@ -26,6 +26,33 @@ const DentistSchema = new mongoose.Schema({
     region: {
         type: String,
         required: [true,'Please add a region']
+    },
+    workingHours: {
+        startTime: {
+            type: String,
+            default: '09:00'
+        },
+        endTime: {
+            type: String,
+            default: '17:00'
+        },
+        breakStartTime: {
+            type: String,
+            default: '12:00'
+        },
+        breakEndTime: {
+            type: String,
+            default: '13:00'
+        }
+    },
+    workingDays: {
+        type: [String],
+        enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        default: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+    },
+    appointmentDuration: {
+        type: Number,
+        default: 60
     }
 },{
     toJSON: {virtuals: true},
