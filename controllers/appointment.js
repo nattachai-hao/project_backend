@@ -76,7 +76,17 @@ exports.addAppointment=async (req,res,next)=>{
         console.log(req.body);
 
         // Validate appointment date and time
+        if(!req.body.apptDate) {
+            return res.status(400).json({success:false, message: 'Please provide apptDate'});
+        }
+
         const apptDate = new Date(req.body.apptDate);
+        
+        // Check if date is valid
+        if(isNaN(apptDate.getTime())) {
+            return res.status(400).json({success:false, message: `Invalid date format. Expected: 2026-03-04T11:00:00.000Z, Got: ${req.body.apptDate}`});
+        }
+
         const dayName = apptDate.toLocaleString('en-US', { weekday: 'long' });
 
         // Check if dentist works on this day
