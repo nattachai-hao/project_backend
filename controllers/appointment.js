@@ -85,8 +85,8 @@ exports.addAppointment=async (req,res,next)=>{
         }
 
         // Check if time is within working hours and not during break
-        const apptHour = apptDate.getHours();
-        const apptMin = apptDate.getMinutes();
+        const apptHour = apptDate.getUTCHours();
+        const apptMin = apptDate.getUTCMinutes();
         const apptTime = `${String(apptHour).padStart(2, '0')}:${String(apptMin).padStart(2, '0')}`;
 
         const [startHour, startMin] = dentist.workingHours.startTime.split(':').map(Number);
