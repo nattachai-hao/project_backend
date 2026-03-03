@@ -6,6 +6,14 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
+const mongoSanitize=require('@exortek/express-mongo-sanitize');
+const helmet = require('helmet');
+const {xss} = require('express-xss-sanitizer');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
+const cors = require('cors');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUI = require('swagger-ui-express');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'})
@@ -19,6 +27,43 @@ const app=express();
 app.use(cookieParser());
 //Body parser
 app.use(express.json());
+//Sanitize data ป้ปงกันใช้คำสั่งno sql log inเข้า
+app.use(mongoSanitize());
+//helmet ป้องกันในส่วนheader
+app.use(helmet());
+//xss ป้องกันโดนใส่script มาในbody 
+app.use(xss());
+//rate limiting จำกันการrequest ต่อ กี่นาที
+const limiter=rateLimit({
+    windowMs:10*60*1000, //10 mins
+    max: 100
+});
+app.use(limiter);
+//Prevent http param pollution
+app.use(hpp());
+//Enable cors
+app.use(cors());
+
+const swaggerOptions={
+    swaggerDefinition:{
+        openapi: '3.0.0',
+        info: {
+            title: 'Library API',
+            version: '1.0.0',
+            description: 'A simple Express API'
+        },
+        servers: [
+            {
+                url: 'http://localhost:5003/api/v1'
+            }
+        ],
+    },
+    apis:['./routes/*.js'],
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerDocs));
+
 //set ให้ใช้qury ได้
 app.set('query parser','extended');
 
